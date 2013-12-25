@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cefclient", "cefclient.vcxproj", "{43CC1856-8F29-41E5-89ED-0CE19DFF8350}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CE92BEB6-74FC-404A-817B-A2E50C4BCAEA} = {CE92BEB6-74FC-404A-817B-A2E50C4BCAEA}
+		{E513F4F2-BE71-4EA8-A577-623B221B278F} = {E513F4F2-BE71-4EA8-A577-623B221B278F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcef_dll", "libcef_dll.vcxproj", "{E513F4F2-BE71-4EA8-A577-623B221B278F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cefclient_process", "cefclient_process.vcxproj", "{CE92BEB6-74FC-404A-817B-A2E50C4BCAEA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E513F4F2-BE71-4EA8-A577-623B221B278F} = {E513F4F2-BE71-4EA8-A577-623B221B278F}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{43CC1856-8F29-41E5-89ED-0CE19DFF8350}.Debug|Win32.ActiveCfg = Debug|Win32
+		{43CC1856-8F29-41E5-89ED-0CE19DFF8350}.Debug|Win32.Build.0 = Debug|Win32
+		{43CC1856-8F29-41E5-89ED-0CE19DFF8350}.Release|Win32.ActiveCfg = Release|Win32
+		{43CC1856-8F29-41E5-89ED-0CE19DFF8350}.Release|Win32.Build.0 = Release|Win32
+		{E513F4F2-BE71-4EA8-A577-623B221B278F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E513F4F2-BE71-4EA8-A577-623B221B278F}.Debug|Win32.Build.0 = Debug|Win32
+		{E513F4F2-BE71-4EA8-A577-623B221B278F}.Release|Win32.ActiveCfg = Release|Win32
+		{E513F4F2-BE71-4EA8-A577-623B221B278F}.Release|Win32.Build.0 = Release|Win32
+		{CE92BEB6-74FC-404A-817B-A2E50C4BCAEA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE92BEB6-74FC-404A-817B-A2E50C4BCAEA}.Debug|Win32.Build.0 = Debug|Win32
+		{CE92BEB6-74FC-404A-817B-A2E50C4BCAEA}.Release|Win32.ActiveCfg = Release|Win32
+		{CE92BEB6-74FC-404A-817B-A2E50C4BCAEA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SendMessage</title>
+  <style type="text/css">
+    .box {
+      width: 400px;
+      margin: 0 auto;
+    }
+    .buttonBox {
+      float: right;
+    }
+    #messageBox {
+      display: block;
+      resize: none;
+      width: 390px;
+      height: 200px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>SendMessage</h1>
+    <textarea id="messageBox">I'm a message.</textarea>
+    <div class="buttonBox">
+      <input type="button" id="sendButton" value="Send"/>
+    </div>
+  </div>
+  <script>
+    function addEvent(element, event, func) {
+      if (element.attachEvent)
+        return element.attachEvent("on" + event, func);
+      else
+        return element.addEventListener(event, func, false);
+    }
+
+    var sendButton = document.getElementById("sendButton");
+    addEvent(sendButton, "click", function() {
+      var messageBox = document.getElementById("messageBox");
+      app.sendMessage(messageBox.value);
+    });
+  </script>
+</body>
+</html>
