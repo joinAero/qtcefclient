@@ -129,7 +129,15 @@ void MainWindow::on_actionSendMessage_triggered() {
 }
 
 void MainWindow::on_actionLoadHtml_triggered() {
-  webview_->setHtml("<h1>Hello everyone!</h1>", QUrl("http://tests/LoadHtml/"));
+  // If the url is "about:blank" at first, it will fail to setHtml().
+  // And the url will be "data:text/html,chromewebdata" now.
+  // 
+  // It will also lead to back() issue as follows:
+  // "about:blank"(at first) > LoadHtml > Back > Forward(fail to load) >
+  // Back > the loading issue.
+  // 
+  // However setHtml() will lead to some navigation problems.
+  webview_->setHtml("<h1>Hello everyone!</h1>", QUrl("tests://LoadHtml/"));
 }
 
 void MainWindow::SetupUi() {

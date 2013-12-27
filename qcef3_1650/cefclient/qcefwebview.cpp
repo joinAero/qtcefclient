@@ -8,10 +8,13 @@
 
 extern CefRefPtr<ClientHandler> g_handler;
 
+const QString QCefWebView::kUrlBlank = "about:blank";
+
 QCefWebView::QCefWebView(QWidget* parent)
   : QWidget(parent),
     browser_state_(kNone),
-    need_resize_(false) {
+    need_resize_(false),
+    need_load_(false) {
   //qDebug() << __FUNCTION__ << QThread::currentThreadId();
   setAttribute(Qt::WA_NativeWindow);
   setAttribute(Qt::WA_DontCreateNativeAncestors);
@@ -24,13 +27,16 @@ QCefWebView::~QCefWebView() {
 void QCefWebView::load(const QUrl& url) {
   //qDebug() << __FUNCTION__ << url;
   url_ = url;
-  if (GetBrowser().get() && !url.isEmpty()) {
-    CefString cefurl(url_.toString().toStdWString());
-    GetBrowser()->GetMainFrame()->LoadURL(cefurl);
-    return;
+  switch (browser_state_) {
+  case kNone:
+    CreateBrowser(size()); break;
+  case kCreating:
+    // If resizeEvent()/showEvent() before you load a url, it will
+    // CreateBrowser() as soon as possible with "about:blank".
+    need_load_ = true; break;
+  default:  // The browser should have been created.
+    BrowserLoadUrl(url);
   }
-  browser_state_ = kNone;
-  CreateBrowser(size());
 }
 
 void QCefWebView::setHtml(const QString& html, const QUrl& baseUrl) {
@@ -116,6 +122,7 @@ void QCefWebView::closeEvent(QCloseEvent* e) {
 }
 
 void QCefWebView::showEvent(QShowEvent* e) {
+  //qDebug() << __FUNCTION__;
   CreateBrowser(size());
 }
 
@@ -141,11 +148,18 @@ void QCefWebView::OnTitleChange(const QString& title) {
 }
 
 void QCefWebView::SetLoading(bool isLoading) {
-  //qDebug() << __FUNCTION__ << isLoading;
+  //qDebug() << __FUNCTION__ << isLoading << url();
   if (isLoading) {
-    emit loadStarted();
+    if (!need_load_ && !url_.isEmpty())
+      emit loadStarted();
   } else {
-    emit loadFinished(true);
+    if (need_load_) {
+      //qDebug() << __FUNCTION__ << "need_load_" << url_;
+      BrowserLoadUrl(url_);
+      need_load_ = false;
+    } else if (/*!need_load_ && */!url_.isEmpty()) {
+      emit loadFinished(true);
+    }
   }
 }
 
@@ -158,6 +172,7 @@ void QCefWebView::OnAfterCreated() {
   //qDebug() << __FUNCTION__;
   browser_state_ = kCreated;
   if (need_resize_) {
+    //qDebug() << __FUNCTION__ << "need_resize_";
     ResizeBrowser(size());
     need_resize_ = false;
   }
@@ -170,9 +185,16 @@ void QCefWebView::OnMessageEvent(MessageEvent* e) {
 }
 
 bool QCefWebView::CreateBrowser(const QSize& size) {
+  //qDebug() << __FUNCTION__ << __LINE__;
   if (browser_state_ != kNone || size.isEmpty()) {
     return false;
   }
+  mutex_.lock();
+  if (browser_state_ != kNone) {
+    mutex_.unlock();
+    return false;
+  }
+  //qDebug() << __FUNCTION__ << __LINE__;
   RECT rect;
   rect.left = 0;
   rect.top = 0;
@@ -187,11 +209,15 @@ bool QCefWebView::CreateBrowser(const QSize& size) {
 
   g_handler->set_listener(this);
 
-  CefString url = url_.isEmpty() ? "about:blank"
-                                 : CefString(url_.toString().toStdWString());
-  CefBrowserHost::CreateBrowser(info, g_handler.get(), url, settings, NULL);
+  QString url = url_.isEmpty() ? kUrlBlank : url_.toString();
+  CefBrowserHost::CreateBrowser(info,
+                                g_handler.get(),
+                                CefString(url.toStdWString()),
+                                settings,
+                                NULL);
 
   browser_state_ = kCreating;
+  mutex_.unlock();
   return true;
 }
 
@@ -214,4 +240,13 @@ void QCefWebView::ResizeBrowser(const QSize& size) {
       EndDeferWindowPos(hdwp);
     }
   }
+}
+
+bool QCefWebView::BrowserLoadUrl(const QUrl& url) {
+  if (!url.isEmpty() && GetBrowser().get()) {
+    CefString cefurl(url_.toString().toStdWString());
+    GetBrowser()->GetMainFrame()->LoadURL(cefurl);
+    return true;
+  }
+  return false;
 }

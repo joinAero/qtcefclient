@@ -6,7 +6,7 @@
 #include <QCloseEvent>
 #include <QShowEvent>
 #include <QUrl>
-#include <QVariant>
+#include <QMutex>
 #include "cefclient/client_handler.h"
 
 class QCefWebView : public QWidget,
@@ -18,6 +18,8 @@ class QCefWebView : public QWidget,
     kCreating,
     kCreated,
   };
+
+  static const QString kUrlBlank;
 
   QCefWebView(QWidget* parent = 0);
   virtual ~QCefWebView();
@@ -60,10 +62,13 @@ class QCefWebView : public QWidget,
   bool CreateBrowser(const QSize& size);
   CefRefPtr<CefBrowser> GetBrowser() const;
   void ResizeBrowser(const QSize& size);
+  bool BrowserLoadUrl(const QUrl& url);
 
   BrowserState browser_state_;
   bool need_resize_;
+  bool need_load_;
   QUrl url_;
+  QMutex mutex_;
 
   Q_DISABLE_COPY(QCefWebView)
 };
