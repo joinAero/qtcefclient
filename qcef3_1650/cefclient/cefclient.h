@@ -9,6 +9,9 @@
 // Initialize CEF.
 int CefInit(int &argc, char **argv);
 
+// Load web plugins.
+void CefLoadPlugins(bool isWow64);
+
 // Quit CEF.
 void CefQuit();
 

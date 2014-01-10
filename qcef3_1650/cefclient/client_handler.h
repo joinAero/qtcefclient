@@ -193,7 +193,7 @@ class ClientHandler : public CefClient,
                                   const CefString& url,
                                   const CefString& policy_url,
                                   CefRefPtr<CefWebPluginInfo> info) OVERRIDE {
-    return true;  // Block loading of the plugin.
+    return false;  // Return true to block loading of the plugin.
   }
 
   CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }

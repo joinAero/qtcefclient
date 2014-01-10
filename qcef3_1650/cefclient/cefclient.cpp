@@ -64,6 +64,20 @@ int CefInit(int &argc, char **argv) {
   return -1;
 }
 
+void CefLoadPlugins(bool isWow64) {
+  // Adobe Flash Player plug-in:
+  // https://support.google.com/chrome/answer/108086
+  // How to load chrome flash plugin:
+  // https://code.google.com/p/chromiumembedded/issues/detail?id=130
+
+  // Load flash system plug-in on Windows.
+  CefString flash_plugin_dir = isWow64 ? "C:\\Windows\\SysWOW64\\Macromed\\Flash"
+                                       : "C:\\Windows\\System32\\Macromed\\Flash";
+  CefAddWebPluginDirectory(flash_plugin_dir);
+
+  CefRefreshWebPlugins();
+}
+
 void CefQuit() {
   qDebug() << __FUNCTION__;
   // Shut down CEF.
